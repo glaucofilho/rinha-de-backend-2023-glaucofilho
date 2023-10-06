@@ -43,10 +43,11 @@ services:
 
   db: # Banco de dados
     image: postgres
+    container_name: db
     hostname: db
     network_mode: host
     environment:
-      POSTGRES_USER: sa
+      POSTGRES_USER: root
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: banco
     volumes:
