@@ -1,11 +1,11 @@
-from sqlalchemy import Column, Integer, String, Date, ARRAY
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import ARRAY, Column, Date, Integer, String
 
-Base = declarative_base()
+from core.configs import settings
 
-class Pessoa(Base):
-    __tablename__ = 'pessoas'
-    
+
+class PessoaModel(settings.DBBaseModel):
+    __tablename__ = "pessoas"
+
     id = Column(Integer, primary_key=True, index=True)
     apelido = Column(String(32))
     nome = Column(String(100))
