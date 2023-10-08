@@ -1,7 +1,8 @@
 import uuid  # Import the uuid module
 
-from sqlalchemy import ARRAY, Column, Date, Integer, String, UUID
+from sqlalchemy import ARRAY, Column, Date, String
 from sqlalchemy.dialects.postgresql import UUID as pgUUID
+
 from core.configs import settings
 
 

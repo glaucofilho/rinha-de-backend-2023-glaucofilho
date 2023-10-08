@@ -1,8 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
-# CRIANDO O SCHEMA DE PESSOA UTILIANDO OS PARAMETROS DE REFERENCIA E LIMITE
 class PessoaSchema(BaseModel):
     apelido: str = Field(..., max_length=32, example="GlaucoSixx")
     nome: str = Field(..., max_length=100, example="Glauco")
