@@ -1,21 +1,17 @@
 from typing import List
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, Query
 from fastapi.responses import PlainTextResponse
-from pydantic import BaseModel, Field
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from core.deps import get_session
 from models.pessoas import PessoaModel
-from schemas.pessoas import PessoaSchema
+from schemas.pessoas import PessoaSchema, ReturnPessoaSchema
 
 router = APIRouter()
-
-
-class MyRequest(BaseModel):
-    my_field: int = Field(..., description="An integer field")
 
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
@@ -48,3 +44,44 @@ async def criar_pessoa(
         raise HTTPException(status_code=422)
 
     response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
+
+
+@router.get("/pessoas/{pessoa_id}", response_model=ReturnPessoaSchema)
+async def detalhe_pessoa(
+    pessoa_id: UUID,
+    db: AsyncSession = Depends(get_session),
+):
+    async with db as session:
+        query = select(PessoaModel).where(PessoaModel.id == pessoa_id)
+        result = await session.execute(query)
+        pessoa: PessoaModel = result.scalar()
+
+        if not pessoa:
+            raise HTTPException(status_code=404)
+
+        return pessoa
+
+
+@router.get("/pessoas", response_model=list[ReturnPessoaSchema])
+async def buscar_pessoas(
+    t: str = Query(..., description="Termo de busca"),
+    db: AsyncSession = Depends(get_session),
+):
+    if not t:
+        raise HTTPException(status_code=400)
+    async with db as session:
+        query = (
+            select(PessoaModel)
+            .filter(
+                (
+                    PessoaModel.apelido.ilike(f"%{t}%")
+                    | PessoaModel.nome.ilike(f"%{t}%")
+                    | PessoaModel.stack.any(t)
+                )
+            )
+            .limit(50)
+        )
+        result = await session.execute(query)
+        pessoas: list[PessoaModel] = result.scalars().all()
+
+        return pessoas
