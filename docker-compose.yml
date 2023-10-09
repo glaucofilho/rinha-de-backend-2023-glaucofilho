@@ -6,7 +6,6 @@ services:
     network_mode: host
     environment:
       API_PORT: 8001
-      LOG_LEVEL: DEBUG
       WORKERS: 2
     depends_on:
       - postgresdb
@@ -22,7 +21,6 @@ services:
     network_mode: host
     environment:
       API_PORT: 8002
-      LOG_LEVEL: DEBUG
       WORKERS: 2
     depends_on:
       - postgresdb
