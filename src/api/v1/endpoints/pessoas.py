@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -35,14 +34,10 @@ async def criar_pessoa(
     pessoa: PessoaSchema,
     db: AsyncSession = Depends(get_session),
 ):
-    try:
-        nascimento = datetime.strptime(pessoa.nascimento, "%Y-%m-%d").date()
-    except ValueError:
-        raise HTTPException(status_code=422)
     pessoa_model = PessoaModel(
         apelido=pessoa.apelido,
         nome=pessoa.nome,
-        nascimento=nascimento,
+        nascimento=pessoa.nascimento,
         stack=pessoa.stack,
     )
     try:

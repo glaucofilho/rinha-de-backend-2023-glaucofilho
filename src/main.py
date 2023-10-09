@@ -1,7 +1,6 @@
 import logging
 
 from fastapi import FastAPI, Request
-from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -21,18 +20,18 @@ app.include_router(api_router, prefix="")
 async def validation_exception_handler(
     req: Request, exc: RequestValidationError
 ):
-    details = exc.errors()
+    errors = exc.errors()
     if any(
-        detail["type"] == "string_type" and isinstance(detail["input"], int)
-        for detail in details
+        error["type"] == "string_type" and isinstance(error["input"], int)
+        for error in errors
     ):
         return JSONResponse(
             status_code=400,
-            content=jsonable_encoder({"detail": details}),
+            content=None,
         )
     return JSONResponse(
         status_code=422,
-        content=jsonable_encoder({"detail": details}),
+        content=None,
     )
 
 
