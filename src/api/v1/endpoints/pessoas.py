@@ -65,11 +65,12 @@ async def detalhe_pessoa(
 
 @router.get("/pessoas", response_model=list[ReturnPessoaSchema])
 async def buscar_pessoas(
-    t: str = Query(..., description="Termo de busca"),
+    t: str = Query(description="Termo de busca", default=None),
     db: AsyncSession = Depends(get_session),
 ):
     if not t:
         raise HTTPException(status_code=400)
+
     async with db as session:
         query = (
             select(PessoaModel)

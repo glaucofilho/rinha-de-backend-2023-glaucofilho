@@ -21,6 +21,7 @@ async def validation_exception_handler(
     req: Request, exc: RequestValidationError
 ):
     errors = exc.errors()
+
     if any(
         error["type"] == "string_type" and isinstance(error["input"], int)
         for error in errors
@@ -29,6 +30,7 @@ async def validation_exception_handler(
             status_code=400,
             content=None,
         )
+
     return JSONResponse(
         status_code=422,
         content=None,
