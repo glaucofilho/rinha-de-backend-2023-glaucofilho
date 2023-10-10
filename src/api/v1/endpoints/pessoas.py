@@ -1,8 +1,9 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Response, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import PlainTextResponse
+from sqlalchemy import String, cast, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -74,13 +75,14 @@ async def buscar_pessoas(
             select(PessoaModel)
             .filter(
                 (
-                    PessoaModel.apelido.ilike(f"%{t}%")
-                    | PessoaModel.nome.ilike(f"%{t}%")
-                    | PessoaModel.stack.any(t)
+                    func.lower(PessoaModel.apelido).ilike(f"%{t}%")
+                    | func.lower(PessoaModel.nome).ilike(f"%{t}%")
+                    | cast(PessoaModel.stack, String).ilike(f"%{t}%")
                 )
             )
             .limit(50)
         )
+
         result = await session.execute(query)
         pessoas: list[PessoaModel] = result.scalars().all()
 
