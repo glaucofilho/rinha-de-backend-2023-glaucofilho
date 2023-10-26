@@ -1,5 +1,6 @@
 import logging
 
+import redis
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -7,6 +8,8 @@ from fastapi.responses import JSONResponse
 from api.v1.api import api_router
 from core.configs import settings
 from core.create_tables import create_tables
+
+rd = redis.Redis(host=settings.REDIS_ADDRESS, port=settings.REDIS_PORT, db=0)
 
 app = FastAPI()
 logging.getLogger("fastapi").setLevel(settings.app_config["LOG_LEVEL"])

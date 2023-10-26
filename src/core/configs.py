@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     )
     DBBaseModel: ClassVar = declarative_base()
 
+    REDIS_ADDRESS: str = getenv("REDIS_ADDRESS", "localhost")
+    REDIS_PORT: int = int(getenv("REDIS_PORT", "6379"))
+
     # CONFIGURACOES DA API
     app_config: dict = {
         "LOG_LEVEL": getenv("LOG_LEVEL", "CRITICAL"),
