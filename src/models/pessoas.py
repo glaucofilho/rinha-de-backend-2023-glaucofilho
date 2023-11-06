@@ -14,3 +14,12 @@ class PessoaModel(settings.DBBaseModel):
     nome = Column(String(100))
     nascimento = Column(Date)
     stack = Column(ARRAY(String(32)))
+
+    def to_json(self):
+        return {
+            "id": str(self.id),
+            "apelido": self.apelido,
+            "nome": self.nome,
+            "nascimento": str(self.nascimento),
+            "stack": self.stack,
+        }
