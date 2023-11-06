@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   api1: # API - Instância 01
-    image: rinha-glauco:1.0
+    image: rinha-glauco
     hostname: api1
     network_mode: host
     environment:
@@ -16,7 +16,7 @@ services:
           memory: '0.5GB'
 
   api2: # API - Instância 01
-    image: rinha-glauco:1.0
+    image: rinha-glauco
     hostname: api2
     network_mode: host
     environment:
@@ -40,8 +40,6 @@ services:
       - api2
     hostname: nginx
     network_mode: host
-    ports:
-      - 9999:9999
     deploy:
       resources:
         limits:
@@ -72,3 +70,15 @@ services:
         limits:
           cpus: '0.75'
           memory: '1.5GB'
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    hostname: redis
+    network_mode: host
+    command: redis-server --save "" --appendonly no --maxclients 10000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '0.5GB'

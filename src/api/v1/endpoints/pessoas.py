@@ -8,11 +8,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from core.cache import Cache
 from core.deps import get_session
 from models.pessoas import PessoaModel
 from schemas.pessoas import PessoaSchema, ReturnPessoaSchema
 
 router = APIRouter()
+
+cache = Cache()
 
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
@@ -44,6 +47,8 @@ async def criar_pessoa(
     except IntegrityError:
         raise HTTPException(status_code=422)
 
+    await cache.set(pessoa.id, pessoa_model, expiration=3600)
+
     response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
 
 
@@ -53,13 +58,19 @@ async def detalhe_pessoa(
     db: AsyncSession = Depends(get_session),
 ):
     async with db as session:
+        cache_key = pessoa_id
+        cached_result = await cache.get(cache_key)
+        if cached_result:
+            print("cached")
+            return cached_result
+
         query = select(PessoaModel).where(PessoaModel.id == pessoa_id)
         result = await session.execute(query)
         pessoa: PessoaModel = result.scalar()
 
         if not pessoa:
             raise HTTPException(status_code=404)
-
+        # await cache.set(pessoa.id, pessoa, expiration=3600)
         return pessoa
 
 
