@@ -8,11 +8,12 @@ from api.v1.api import api_router
 from core.configs import settings
 from core.create_tables import create_tables
 
-app = FastAPI()
-logging.getLogger("fastapi").setLevel(settings.app_config["LOG_LEVEL"])
 if settings.app_config["DISABLE_DOCS"]:
-    app.docs_url = None
-    app.redoc_url = None
+    app = FastAPI(docs_url=None, redoc_url=None)
+else:
+    app = FastAPI()
+logging.getLogger("fastapi").setLevel(settings.app_config["LOG_LEVEL"])
+
 app.include_router(api_router, prefix="")
 
 

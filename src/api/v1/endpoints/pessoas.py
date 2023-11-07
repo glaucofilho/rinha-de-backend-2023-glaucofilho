@@ -51,7 +51,7 @@ async def criar_pessoa(
     except IntegrityError:
         raise HTTPException(status_code=422)
     await cache.set(str(pessoa_model.id), json.dumps(pessoa_model.to_json()))
-    await cache.set(pessoa_model.apelido, True)
+    await cache.set(pessoa_model.apelido, "True")
     response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
 
 
