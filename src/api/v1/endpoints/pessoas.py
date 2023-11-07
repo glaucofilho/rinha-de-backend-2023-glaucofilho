@@ -1,6 +1,7 @@
+import json
 from typing import List
 from uuid import UUID
-import json
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import PlainTextResponse
 from sqlalchemy import String, cast, func
@@ -16,6 +17,7 @@ from schemas.pessoas import PessoaSchema, ReturnPessoaSchema
 router = APIRouter()
 
 cache = Cache()
+
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
 async def contar_pessoas(db: AsyncSession = Depends(get_session)):
@@ -33,6 +35,9 @@ async def criar_pessoa(
     pessoa: PessoaSchema,
     db: AsyncSession = Depends(get_session),
 ):
+    cached_result = await cache.get(pessoa.apelido)
+    if cached_result is not None:
+        raise HTTPException(status_code=422)
     pessoa_model = PessoaModel(
         apelido=pessoa.apelido,
         nome=pessoa.nome,
@@ -45,9 +50,8 @@ async def criar_pessoa(
                 session.add(pessoa_model)
     except IntegrityError:
         raise HTTPException(status_code=422)
-    cache_key = str(pessoa_model.id)
-    await cache.set(f"pessoa_{cache_key}", json.dumps(pessoa_model.to_json()))
-
+    await cache.set(str(pessoa_model.id), json.dumps(pessoa_model.to_json()))
+    await cache.set(pessoa_model.apelido, True)
     response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
 
 
@@ -56,12 +60,10 @@ async def detalhe_pessoa(
     pessoa_id: UUID,
     db: AsyncSession = Depends(get_session),
 ):
+    cached_result = await cache.get(str(pessoa_id))
+    if cached_result:
+        return json.loads(cached_result)
     async with db as session:
-        cache_key = str(pessoa_id)
-        cached_result = await cache.get(f"pessoa_{cache_key}")
-        if cached_result:
-            return json.loads(cached_result)
-
         query = select(PessoaModel).where(PessoaModel.id == pessoa_id)
         result = await session.execute(query)
         pessoa: PessoaModel = result.scalar()
