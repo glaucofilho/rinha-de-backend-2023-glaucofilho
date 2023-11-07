@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from fastapi.responses import PlainTextResponse
-from sqlalchemy import String, cast, func
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -17,6 +17,23 @@ from schemas.pessoas import PessoaSchema, ReturnPessoaSchema
 router = APIRouter()
 
 cache = Cache()
+
+
+CONSULTA_PESSOA_SQL = text(
+    "SELECT id, apelido, nome, nascimento, "
+    "stack FROM pessoas p WHERE p.id = :id LIMIT 1"
+)
+
+BUSCA_PESSOA_SQL = text(
+    "SELECT id, apelido, nome, nascimento, "
+    "stack FROM pessoas p WHERE p.busca ILIKE :t LIMIT 50"
+)
+
+INSERIR_PESSOA_SQL = text(
+    "INSERT INTO pessoas (apelido, nome, nascimento, stack, busca) "
+    "VALUES (:apelido, :nome, :nascimento, :stack, :busca) "
+    "RETURNING id"
+)
 
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
@@ -38,18 +55,32 @@ async def criar_pessoa(
     cached_result = await cache.get(pessoa.apelido)
     if cached_result is not None:
         raise HTTPException(status_code=422)
+    try:
+        async with db as session:
+            result = await session.execute(
+                INSERIR_PESSOA_SQL,
+                {
+                    "apelido": pessoa.apelido,
+                    "nome": pessoa.nome,
+                    "nascimento": pessoa.nascimento,
+                    "stack": pessoa.stack,
+                    "busca": (
+                        f"{pessoa.apelido} {pessoa.nome}"
+                        f" {' '.join(pessoa.stack)}"
+                    ),
+                },
+            )
+            await session.commit()
+    except IntegrityError:
+        raise HTTPException(status_code=422)
+    row = result.fetchone()
     pessoa_model = PessoaModel(
+        id=str(row[0]),
         apelido=pessoa.apelido,
         nome=pessoa.nome,
         nascimento=pessoa.nascimento,
         stack=pessoa.stack,
     )
-    try:
-        async with db as session:
-            async with session.begin():
-                session.add(pessoa_model)
-    except IntegrityError:
-        raise HTTPException(status_code=422)
     await cache.set(str(pessoa_model.id), json.dumps(pessoa_model.to_json()))
     await cache.set(pessoa_model.apelido, "True")
     response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
@@ -64,13 +95,10 @@ async def detalhe_pessoa(
     if cached_result:
         return json.loads(cached_result)
     async with db as session:
-        query = select(PessoaModel).where(PessoaModel.id == pessoa_id)
-        result = await session.execute(query)
-        pessoa: PessoaModel = result.scalar()
-
+        result = await session.execute(CONSULTA_PESSOA_SQL, {"id": pessoa_id})
+        pessoa: PessoaModel = result.fetchone()
         if not pessoa:
             raise HTTPException(status_code=404)
-
         return pessoa
 
 
@@ -83,19 +111,6 @@ async def buscar_pessoas(
         raise HTTPException(status_code=400)
 
     async with db as session:
-        query = (
-            select(PessoaModel)
-            .filter(
-                (
-                    func.lower(PessoaModel.apelido).ilike(f"%{t}%")
-                    | func.lower(PessoaModel.nome).ilike(f"%{t}%")
-                    | cast(PessoaModel.stack, String).ilike(f"%{t}%")
-                )
-            )
-            .limit(50)
-        )
-
-        result = await session.execute(query)
-        pessoas: list[PessoaModel] = result.scalars().all()
-
+        result = await session.execute(BUSCA_PESSOA_SQL, {"t": f"%{t}%"})
+        pessoas: list[PessoaModel] = result.fetchall()
         return pessoas
