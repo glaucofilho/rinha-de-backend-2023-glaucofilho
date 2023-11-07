@@ -7,5 +7,6 @@ black --line-length 79 src && isort src && flake8 src
 
 ip addr show eth0 | grep inet | awk '{ print $2; }' | sed 's/\/.*$//'
 
+sudo chmod +x stress-test/run-test.sh 
 
-https://medium.com/@arturocuicas/fastapi-and-redis-cache-a31ca832853e
+sudo ./stress-test/run-test.sh 
