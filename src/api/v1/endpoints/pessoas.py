@@ -1,4 +1,3 @@
-import json
 from typing import List
 from uuid import UUID
 
@@ -55,35 +54,31 @@ async def criar_pessoa(
     cached_result = await cache.get(pessoa.apelido)
     if cached_result is not None:
         raise HTTPException(status_code=422)
+    pessoa_model = {
+        "apelido": pessoa.apelido,
+        "nome": pessoa.nome,
+        "nascimento": pessoa.nascimento.isoformat(),
+        "stack": pessoa.stack,
+        "busca": (
+            f"{pessoa.apelido} {pessoa.nome}" f" {' '.join(pessoa.stack)}"
+        ),
+    }
     try:
         async with db as session:
             result = await session.execute(
                 INSERIR_PESSOA_SQL,
-                {
-                    "apelido": pessoa.apelido,
-                    "nome": pessoa.nome,
-                    "nascimento": pessoa.nascimento,
-                    "stack": pessoa.stack,
-                    "busca": (
-                        f"{pessoa.apelido} {pessoa.nome}"
-                        f" {' '.join(pessoa.stack)}"
-                    ),
-                },
+                pessoa_model,
             )
             await session.commit()
     except IntegrityError:
         raise HTTPException(status_code=422)
     row = result.fetchone()
-    pessoa_model = PessoaModel(
-        id=str(row[0]),
-        apelido=pessoa.apelido,
-        nome=pessoa.nome,
-        nascimento=pessoa.nascimento,
-        stack=pessoa.stack,
-    )
-    await cache.set(str(pessoa_model.id), json.dumps(pessoa_model.to_json()))
-    await cache.set(pessoa_model.apelido, "True")
-    response.headers.update({"Location": f"/pessoas/{pessoa_model.id}"})
+    del pessoa_model["busca"]
+    id = str(row[0])
+    pessoa_model["id"] = id
+    await cache.set(id, str(pessoa_model))
+    await cache.set(pessoa_model["apelido"], 0)
+    response.headers.update({"Location": f"/pessoas/{id}"})
 
 
 @router.get("/pessoas/{pessoa_id}", response_model=ReturnPessoaSchema)
@@ -93,7 +88,7 @@ async def detalhe_pessoa(
 ):
     cached_result = await cache.get(str(pessoa_id))
     if cached_result:
-        return json.loads(cached_result)
+        return Response(content=cached_result)
     async with db as session:
         result = await session.execute(CONSULTA_PESSOA_SQL, {"id": pessoa_id})
         pessoa: PessoaModel = result.fetchone()

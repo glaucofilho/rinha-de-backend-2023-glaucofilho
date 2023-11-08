@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import Response
 
 from api.v1.api import api_router
 from core.configs import settings
@@ -27,15 +27,9 @@ async def validation_exception_handler(
         error["type"] == "string_type" and isinstance(error["input"], int)
         for error in errors
     ):
-        return JSONResponse(
-            status_code=400,
-            content=None,
-        )
+        return Response(status_code=400)
 
-    return JSONResponse(
-        status_code=422,
-        content=None,
-    )
+    return Response(status_code=422)
 
 
 if __name__ == "__main__":

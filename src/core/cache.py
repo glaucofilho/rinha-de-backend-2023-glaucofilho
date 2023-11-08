@@ -16,4 +16,4 @@ class Cache:
     async def get(self, key):
         client = redis.Redis(connection_pool=self.pool)
         value = await client.get(str(key))
-        return value.decode("utf-8") if value else None
+        return value if value else None
