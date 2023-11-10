@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from fastapi import FastAPI, Request
@@ -33,11 +34,10 @@ async def validation_exception_handler(
 
 
 if __name__ == "__main__":
-    import asyncio
-
     import uvicorn
 
     asyncio.run(create_tables())
+
     uvicorn.run(
         "main:app",
         host=settings.app_config["API_HOST"],

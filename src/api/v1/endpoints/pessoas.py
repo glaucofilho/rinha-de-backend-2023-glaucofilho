@@ -49,7 +49,6 @@ async def contar_pessoas(db: AsyncSession = Depends(get_session)):
 async def criar_pessoa(
     response: Response,
     pessoa: PessoaSchema,
-    db: AsyncSession = Depends(get_session),
 ):
     cached_result = await cache.get(pessoa.apelido)
     if cached_result is not None:
@@ -64,12 +63,11 @@ async def criar_pessoa(
         ),
     }
     try:
-        async with db as session:
+        async with get_session() as session:
             result = await session.execute(
                 INSERIR_PESSOA_SQL,
                 pessoa_model,
             )
-            await session.commit()
     except IntegrityError:
         raise HTTPException(status_code=422)
     row = result.fetchone()
@@ -84,12 +82,11 @@ async def criar_pessoa(
 @router.get("/pessoas/{pessoa_id}", response_model=ReturnPessoaSchema)
 async def detalhe_pessoa(
     pessoa_id: UUID,
-    db: AsyncSession = Depends(get_session),
 ):
     cached_result = await cache.get(str(pessoa_id))
     if cached_result:
         return Response(content=cached_result)
-    async with db as session:
+    async with get_session() as session:
         result = await session.execute(CONSULTA_PESSOA_SQL, {"id": pessoa_id})
         pessoa: PessoaModel = result.fetchone()
         if not pessoa:
@@ -100,12 +97,10 @@ async def detalhe_pessoa(
 @router.get("/pessoas", response_model=list[ReturnPessoaSchema])
 async def buscar_pessoas(
     t: str = Query(description="Termo de busca", default=None),
-    db: AsyncSession = Depends(get_session),
 ):
     if not t:
         raise HTTPException(status_code=400)
-
-    async with db as session:
+    async with get_session() as session:
         result = await session.execute(BUSCA_PESSOA_SQL, {"t": f"%{t}%"})
         pessoas: list[PessoaModel] = result.fetchall()
         return pessoas
