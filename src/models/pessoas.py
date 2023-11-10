@@ -10,7 +10,6 @@ class PessoaModel(settings.DBBaseModel):
     id = Column(
         pgUUID(as_uuid=True),
         primary_key=True,
-        server_default=text("gen_random_uuid()"),
     )
     apelido = Column(String(32), index=True, unique=True)
     nome = Column(String(100))

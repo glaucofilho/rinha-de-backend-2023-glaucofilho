@@ -29,9 +29,8 @@ BUSCA_PESSOA_SQL = text(
 )
 
 INSERIR_PESSOA_SQL = text(
-    "INSERT INTO pessoas (apelido, nome, nascimento, stack, busca) "
-    "VALUES (:apelido, :nome, :nascimento, :stack, :busca) "
-    "RETURNING id"
+    "INSERT INTO pessoas (id, apelido, nome, nascimento, stack, busca) "
+    "VALUES (:id, :apelido, :nome, :nascimento, :stack, :busca) "
 )
 
 
@@ -54,6 +53,7 @@ async def criar_pessoa(
     if cached_result is not None:
         raise HTTPException(status_code=422)
     pessoa_model = {
+        "id": pessoa.id,
         "apelido": pessoa.apelido,
         "nome": pessoa.nome,
         "nascimento": pessoa.nascimento.isoformat(),
@@ -70,13 +70,10 @@ async def criar_pessoa(
             )
     except IntegrityError:
         raise HTTPException(status_code=422)
-    row = result.fetchone()
     del pessoa_model["busca"]
-    id = str(row[0])
-    pessoa_model["id"] = id
     await cache.set(id, str(pessoa_model))
     await cache.set(pessoa_model["apelido"], 0)
-    response.headers.update({"Location": f"/pessoas/{id}"})
+    response.headers.update({"Location": f"/pessoas/{pessoa.id}"})
 
 
 @router.get("/pessoas/{pessoa_id}", response_model=ReturnPessoaSchema)
