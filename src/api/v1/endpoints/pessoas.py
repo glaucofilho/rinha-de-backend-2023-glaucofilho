@@ -21,7 +21,7 @@ router = APIRouter()
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
 async def contar_pessoas(db: AsyncSession = Depends(get_session)):
-    sleep(5)
+    sleep(60) # Espera os inserts na fila
     async with db as session:
         query = select(PessoaModel)
         result = await session.execute(query)
