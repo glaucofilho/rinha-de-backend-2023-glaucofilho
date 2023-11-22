@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # CONFIGURACOES DA API
     app_config: dict = {
         "LOG_LEVEL": getenv("LOG_LEVEL", "CRITICAL"),
-        "DISABLE_DOCS": getenv("DISABLE_DOCS", "True").lower() == "true",
+        "DISABLE_DOCS": getenv("DISABLE_DOCS", "False").lower() == "true",
         "WORKERS": int(getenv("WORKERS", 1)),
         "API_PORT": int(getenv("API_PORT", 8000)),
         "API_HOST": str(getenv("API_HOST", "0.0.0.0")),

@@ -11,3 +11,6 @@ sudo docker compose up -d
 sudo chmod +x stress-test/run-test.sh 
 
 sudo ./stress-test/run-test.sh 
+
+## Infos
+Max usuarios possiveis = 46.576
