@@ -67,8 +67,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.29' # SEM BUSCA
-          memory: '0.25GB' # SEM BUSCA
+          cpus: '0.29'
+          memory: '0.25GB'
 
 
   redis:
