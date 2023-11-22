@@ -23,6 +23,4 @@ class ReturnPessoaSchema(BaseModel):
     apelido: str = Field(..., max_length=32, example="GlaucoSixx")
     nome: str = Field(..., max_length=100, example="Glauco")
     nascimento: date = Field(..., example=date(1900, 1, 1))
-    stack: Optional[list[str]] = Field(
-        ..., max_length=32, example=["Python", "FastAPI"]
-    )
+    stack: Optional[str] = Field(..., example=["Python", "FastAPI"])

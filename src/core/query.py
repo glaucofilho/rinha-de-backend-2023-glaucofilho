@@ -10,7 +10,7 @@ BUSCA_PESSOA_SQL = text(
     "stack FROM pessoas p WHERE p.busca ILIKE :t LIMIT 50"
 )
 
-INSERIR_PESSOA_SQL = "INSERT INTO pessoas (id, apelido, nome, nascimento, stack, busca) VALUES (%(id)s, %(apelido)s, %(nome)s, %(nascimento)s, %(stack)s, %(busca)s) ON conflict (apelido) do update set id = excluded.id, apelido = excluded.apelido, nome = excluded.nome, nascimento = excluded.nascimento, stack = excluded.stack, busca = excluded.busca"
+INSERIR_PESSOA_SQL = "INSERT INTO pessoas (id, apelido, nome, nascimento, stack) VALUES (%(id)s, %(apelido)s, %(nome)s, %(nascimento)s, %(stack)s) ON conflict (apelido) do update set id = excluded.id, apelido = excluded.apelido, nome = excluded.nome, nascimento = excluded.nascimento, stack = excluded.stack"
 
 
 async def insert_into_db(pool, persons):

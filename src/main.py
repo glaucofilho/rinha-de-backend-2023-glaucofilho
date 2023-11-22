@@ -9,7 +9,8 @@ from psycopg_pool import AsyncConnectionPool
 from api.v1.api import api_router
 from core.agent import worker
 from core.configs import settings
-from core.create_tables import create_tables
+
+# from core.create_tables import create_tables
 
 if settings.app_config["DISABLE_DOCS"]:
     app = FastAPI(docs_url=None, redoc_url=None)
@@ -49,7 +50,7 @@ async def validation_exception_handler(
 if __name__ == "__main__":
     import uvicorn
 
-    asyncio.run(create_tables())
+    # asyncio.run(create_tables())
     uvicorn.run(
         "main:app",
         host=settings.app_config["API_HOST"],

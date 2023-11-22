@@ -1,4 +1,5 @@
 import pickle
+from time import sleep
 from typing import List
 from uuid import UUID
 
@@ -20,6 +21,7 @@ router = APIRouter()
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
 async def contar_pessoas(db: AsyncSession = Depends(get_session)):
+    sleep(5)
     async with db as session:
         query = select(PessoaModel)
         result = await session.execute(query)
@@ -42,8 +44,7 @@ async def criar_pessoa(
         "apelido": pessoa.apelido,
         "nome": pessoa.nome,
         "nascimento": pessoa.nascimento.isoformat(),
-        "stack": pessoa.stack,
-        "busca": f"{pessoa.apelido} {pessoa.nome} {' '.join(pessoa.stack) if pessoa.stack else ''}",
+        "stack": str(pessoa.stack),
     }
     await cache.set(str(pessoa.id), pickle.dumps(pessoa_model))
     await cache.set(pessoa_model["apelido"], 0)
@@ -58,7 +59,6 @@ async def detalhe_pessoa(
     cached_result = await cache.get(str(pessoa_id))
     if cached_result:
         cached_result = pickle.loads(cached_result)
-        del cached_result["busca"]
         return Response(content=str(cached_result))
     async with get_session() as session:
         result = await session.execute(CONSULTA_PESSOA_SQL, {"id": pessoa_id})

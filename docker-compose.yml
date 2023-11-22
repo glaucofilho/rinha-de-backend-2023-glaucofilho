@@ -56,7 +56,7 @@ services:
       POSTGRES_PASSWORD: 1234
       POSTGRES_DB: root
     volumes:
-      # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
@@ -67,8 +67,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2' # SEM BUSCA
-          memory: '0.1GB' # SEM BUSCA
+          cpus: '0.29' # SEM BUSCA
+          memory: '0.25GB' # SEM BUSCA
 
 
   redis:
