@@ -10,8 +10,9 @@ class CreatePessoaSchema(BaseModel):
     nome: str = Field(..., max_length=100, example="Glauco")
     nascimento: date = Field(..., example=date(1900, 1, 1))
     stack: Optional[list[str]] = Field(
-        ...,  example=["Python", "FastAPI"] # max_length=32,
+        ..., max_length=32, example=["Python", "FastAPI"]
     )
+
 
 class PessoaSchema(CreatePessoaSchema):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4)
@@ -23,5 +24,5 @@ class ReturnPessoaSchema(BaseModel):
     nome: str = Field(..., max_length=100, example="Glauco")
     nascimento: date = Field(..., example=date(1900, 1, 1))
     stack: Optional[list[str]] = Field(
-        ..., example=["Python", "FastAPI"] # , max_length=32
+        ..., max_length=32, example=["Python", "FastAPI"]
     )

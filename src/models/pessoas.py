@@ -14,5 +14,5 @@ class PessoaModel(settings.DBBaseModel):
     apelido = Column(String(32), index=True, unique=True)
     nome = Column(String(100))
     nascimento = Column(String(10))
-    stack = Column(ARRAY(String())) # String(32)
+    stack = Column(ARRAY(String()))
     busca = Column(String, index=True, unique=True)
