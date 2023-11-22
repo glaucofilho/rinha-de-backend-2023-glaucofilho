@@ -13,7 +13,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: '0.25GB'
+          memory: '0.5GB'
 
   api2: # API - Instância 01
     image: rinha-glauco
@@ -29,7 +29,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: '0.25GB'
+          memory: '0.5GB'
 
   nginx: # Load Balancer
     image: nginx:latest
@@ -44,7 +44,7 @@ services:
       resources:
         limits:
           cpus: '0.15'
-          memory: '0.05GB'
+          memory: '0.1GB'
 
   postgresdb: # Banco de dados
     image: postgres
@@ -68,7 +68,7 @@ services:
       resources:
         limits:
           cpus: '0.29'
-          memory: '0.25GB'
+          memory: '0.5GB'
 
 
   redis:
@@ -81,4 +81,4 @@ services:
       resources:
         limits:
           cpus: '0.06'
-          memory: '0.05GB'
+          memory: '0.1GB'
