@@ -1,50 +1,60 @@
 version: '3.5'
 services:
-  api1: # API - Instância 01
-    image: rinha-glauco
-    hostname: api1
-    network_mode: host
-    environment:
-      API_PORT: 8001
-      WORKERS: 6
-    depends_on:
-      - postgresdb
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: '0.5GB'
+  # api1: # API - Instância 01
+  #   image: rinha-glauco
+  #   hostname: api1
+  #   network_mode: host
+  #   environment:
+  #     API_PORT: 8001
+  #     WORKERS: 2
+  #     POOL_MAX_SIZE: 20
+  #     POOL_MIN_SIZE: 1
+  #     POOL_IDLE: 5
+  #     BLOCO_TAMANHO: 100
+  #     INTERVALO_SEGUNDOS: 2
+  #   depends_on:
+  #     - postgresdb
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: '0.5GB'
 
-  api2: # API - Instância 01
-    image: rinha-glauco
-    hostname: api2
-    network_mode: host
-    environment:
-      API_PORT: 8002
-      WORKERS: 6
-    depends_on:
-      - postgresdb
-      - api1
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: '0.5GB'
+  # api2: # API - Instância 01
+  #   image: rinha-glauco
+  #   hostname: api2
+  #   network_mode: host
+  #   environment:
+  #     API_PORT: 8002
+  #     WORKERS: 2
+  #     POOL_MAX_SIZE: 20
+  #     POOL_MIN_SIZE: 1
+  #     POOL_IDLE: 5
+  #     BLOCO_TAMANHO: 100
+  #     INTERVALO_SEGUNDOS: 2
+  #   depends_on:
+  #     - postgresdb
+  #     - api1
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1.0'
+  #         memory: '0.5GB'
 
-  nginx: # Load Balancer
-    image: nginx:latest
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - api1
-      - api2
-    hostname: nginx
-    network_mode: host
-    deploy:
-      resources:
-        limits:
-          cpus: '0.15'
-          memory: '0.3GB'
+  # nginx: # Load Balancer
+  #   image: nginx:latest
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - api1
+  #     - api2
+  #   hostname: nginx
+  #   network_mode: host
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.15'
+  #         memory: '0.3GB'
 
   postgresdb: # Banco de dados
     image: postgres
@@ -54,7 +64,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: banco
+      POSTGRES_DB: root
     volumes:
       # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./db/postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf

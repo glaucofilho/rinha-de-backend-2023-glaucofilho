@@ -11,9 +11,12 @@ class Cache:
 
     async def set(self, key, value):
         client = redis.Redis(connection_pool=self.pool)
-        await client.set(str(key), value)
+        await client.set(key, value)
 
     async def get(self, key):
         client = redis.Redis(connection_pool=self.pool)
-        value = await client.get(str(key))
+        value = await client.get(key)
         return value if value else None
+
+
+cache = Cache()
