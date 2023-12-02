@@ -44,9 +44,8 @@ class Settings(BaseSettings):
         "API_HOST": str(getenv("API_HOST", "0.0.0.0")),
     }
 
-    POOL_MAX_SIZE: int = int(getenv("POOL_MAX_SIZE", 20))
-    POOL_MIN_SIZE: int = int(getenv("POOL_MIN_SIZE", 1))
-    POOL_IDLE: int = int(getenv("POOL_IDLE", 5))
+    POOL_MAX_SIZE: int = int(getenv("POOL_MAX_SIZE", 10))
+    POOL_MIN_SIZE: int = int(getenv("POOL_MIN_SIZE", 10))
 
     class Config:
         case_sensitive = True

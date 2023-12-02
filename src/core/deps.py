@@ -12,9 +12,7 @@ async def get_session() -> Generator:
 
     try:
         yield session
-        await session.commit()
-    except:
+    except Exception:
         await session.rollback()
-        raise
     finally:
         await session.close()

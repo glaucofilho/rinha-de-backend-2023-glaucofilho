@@ -18,7 +18,9 @@ async def worker(pool):
         tasks = []
         while len(tasks) < batch_size:
             try:
-                person = await asyncio.wait_for(insert_queue.get(), timeout=batch_timeout)
+                person = await asyncio.wait_for(
+                    insert_queue.get(), timeout=batch_timeout
+                )
                 if person:
                     task = asyncio.create_task(process_batch(pool, [person]))
                     tasks.append(task)

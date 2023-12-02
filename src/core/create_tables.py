@@ -7,6 +7,7 @@ from core.database import engine
 async def create_tables() -> None:
     from models.pessoas import PessoaModel
 
+    print(PessoaModel.__dict__)
     print("Creating tables in the database...")
     sleep(3)
     async with engine.begin() as conn:

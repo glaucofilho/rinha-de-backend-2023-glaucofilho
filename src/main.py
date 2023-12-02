@@ -27,7 +27,6 @@ async def setup_db_pool():
         conninfo=settings.DATABASE_URL_POOL,
         max_size=settings.POOL_MAX_SIZE,
         min_size=settings.POOL_MIN_SIZE,
-        max_idle=settings.POOL_IDLE,
     )
     asyncio.create_task(worker(pool))
 
