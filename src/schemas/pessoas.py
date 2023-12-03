@@ -16,7 +16,7 @@ class CreatePessoaSchema(BaseModel):
 
 class PessoaSchema(CreatePessoaSchema):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4)
-    stack: Optional[str]
+    # stack: Optional[str]
 
 
 class ReturnPessoaSchema(BaseModel):
