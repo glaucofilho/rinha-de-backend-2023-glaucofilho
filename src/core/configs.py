@@ -28,8 +28,8 @@ class Settings(BaseSettings):
     )
     DBBaseModel: ClassVar = declarative_base()
 
-    BLOCO_TAMANHO: int = int(getenv("BLOCO_TAMANHO", "500"))
-    INTERVALO_SEGUNDOS: int = int(getenv("INTERVALO_SEGUNDOS", "1"))
+    BLOCO_TAMANHO: int = int(getenv("BLOCO_TAMANHO", "1000"))
+    INTERVALO_SEGUNDOS: int = int(getenv("INTERVALO_SEGUNDOS", "10"))
 
     REDIS_ADDRESS: str = getenv("REDIS_ADDRESS", "localhost")
     REDIS_PORT: int = int(getenv("REDIS_PORT", "6379"))
@@ -44,8 +44,8 @@ class Settings(BaseSettings):
         "API_HOST": str(getenv("API_HOST", "0.0.0.0")),
     }
 
-    POOL_MAX_SIZE: int = int(getenv("POOL_MAX_SIZE", 10))
-    POOL_MIN_SIZE: int = int(getenv("POOL_MIN_SIZE", 10))
+    POOL_MAX_SIZE: int = int(getenv("POOL_MAX_SIZE", 1))
+    POOL_MIN_SIZE: int = int(getenv("POOL_MIN_SIZE", 1))
 
     class Config:
         case_sensitive = True

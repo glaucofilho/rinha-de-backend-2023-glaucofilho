@@ -38,7 +38,7 @@ async def criar_pessoa(
     cached_result = await cache.get(pessoa.apelido)
     if cached_result is not None:
         raise HTTPException(status_code=422)
-    pessoa = PessoaSchema(**pessoa.dict())
+    pessoa = PessoaSchema(**pessoa.model_dump())
     pessoa_model = {
         "id": pessoa.id,
         "apelido": pessoa.apelido,
