@@ -21,7 +21,6 @@ async def main():
     while True:
         elapsed_time = time.time() - start_time
         cache_len = await cache.get_queue_len()
-        print(str(cache_len))
         if (
             cache_len >= queue_size or elapsed_time >= queue_time
         ) and cache_len > 0:
