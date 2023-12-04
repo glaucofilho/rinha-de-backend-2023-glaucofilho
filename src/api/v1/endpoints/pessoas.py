@@ -8,7 +8,6 @@ from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.agent import insert_queue
 from core.cache import cache
 from core.deps import get_session
 from core.query import BUSCA_PESSOA_SQL, CONSULTA_PESSOA_SQL
@@ -21,7 +20,7 @@ router = APIRouter()
 
 @router.get("/contagem-pessoas", response_class=PlainTextResponse)
 async def contar_pessoas(db: AsyncSession = Depends(get_session)):
-    sleep(10) # Espera os inserts na fila
+    sleep(15)  # Espera os inserts na fila
     async with db as session:
         query = select(PessoaModel)
         result = await session.execute(query)
@@ -46,9 +45,10 @@ async def criar_pessoa(
         "nascimento": pessoa.nascimento.isoformat(),
         "stack": str(pessoa.stack),
     }
-    await cache.set(str(pessoa.id), pickle.dumps(pessoa_model))
-    await cache.set(pessoa_model["apelido"], 0)
-    await insert_queue.put(pessoa_model)
+    pessoa_model = pickle.dumps(pessoa_model)
+    await cache.set(str(pessoa.id), pessoa_model)
+    await cache.set(pessoa.apelido, 0)
+    await cache.put_queue(pessoa_model)
     response.headers.update({"Location": f"/pessoas/{pessoa.id}"})
 
 

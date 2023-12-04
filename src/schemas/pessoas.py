@@ -8,10 +8,8 @@ from pydantic import BaseModel, Field
 class CreatePessoaSchema(BaseModel):
     apelido: str = Field(..., max_length=32)
     nome: str = Field(..., max_length=100)
-    nascimento: date # = Field(...)
-    stack: Optional[list[str]]  = Field(
-        ..., max_length=32
-    )
+    nascimento: date  # = Field(...)
+    stack: Optional[list[str]] = Field(..., max_length=32)
 
 
 class PessoaSchema(CreatePessoaSchema):

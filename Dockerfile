@@ -4,4 +4,4 @@ COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip install -r requirements.txt
 RUN find /app -type d -name __pycache__ -exec rm -r {} +
-CMD ["python", "main.py"]
+# CMD ["python", "run_api.py"]

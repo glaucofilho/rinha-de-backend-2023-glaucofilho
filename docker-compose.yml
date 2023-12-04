@@ -7,13 +7,15 @@ services:
     environment:
       API_PORT: 8001
       WORKERS: 2
+    command: python run_api.py
     depends_on:
       - postgresdb
+      - redis 
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: '0.5GB'
+          cpus: '0.45'
+          memory: '0.4GB'
 
   api2: # API - Instância 01
     image: rinha-glauco
@@ -22,14 +24,32 @@ services:
     environment:
       API_PORT: 8002
       WORKERS: 2
+    command: python run_api.py
     depends_on:
       - postgresdb
       - api1
+      - redis 
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: '0.5GB'
+          cpus: '0.45'
+          memory: '0.4GB'
+
+  agent: # AGENT
+    image: rinha-glauco
+    hostname: agent
+    network_mode: host
+    command: python run_agent.py
+    depends_on:
+      - postgresdb
+      - api1
+      - api2
+      - redis 
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '0.2GB'
 
   nginx: # Load Balancer
     image: nginx:latest
