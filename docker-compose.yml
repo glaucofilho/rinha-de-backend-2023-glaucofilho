@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   api1: # API - Instância 01
-    image: rinha-glauco
+    image: glaucolmf/rinha-backend-2023:1.0.0
     hostname: api1
     network_mode: host
     environment:
@@ -18,7 +18,7 @@ services:
           memory: '0.4GB'
 
   api2: # API - Instância 01
-    image: rinha-glauco
+    image: glaucolmf/rinha-backend-2023:1.0.0
     hostname: api2
     network_mode: host
     environment:
@@ -36,7 +36,7 @@ services:
           memory: '0.4GB'
 
   agent: # AGENT
-    image: rinha-glauco
+    image: glaucolmf/rinha-backend-2023:1.0.0
     hostname: agent
     network_mode: host
     command: python run_agent.py
