@@ -1,5 +1,10 @@
 # rinha-de-backend-2023-glaucofilho
 
+## Artigo Linkedin
+
+https://www.linkedin.com/pulse/rinha-back-end-2023-glauco-lauria-marques-filho-yv5rf
+
+
 ## some commands
 
 black --line-length 79 src && isort src && flake8 src
